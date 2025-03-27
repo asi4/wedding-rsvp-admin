@@ -1,6 +1,6 @@
 async function loginUser(email: string, password: string) {
     try {
-        const response: Response = await fetch("https://your-backend-url.com/api/login", {
+        const response: Response = await fetch("https://wedding-rsvp-admin.onrender.com/api/login", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

@@ -66,7 +66,7 @@ signupForm.addEventListener("submit", async (e) => {
     spinner.style.display = "inline";
 
     try {
-        const res = await fetch("https://your-backend-url.com/api/signup", {
+        const res = await fetch("https://wedding-rsvp-admin.onrender.com/api/signup", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

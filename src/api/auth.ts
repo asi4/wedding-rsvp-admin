@@ -1,5 +1,5 @@
 export async function login(email: string, password: string) {
-    const response: Response = await fetch("http://localhost:5000/login", {
+    const response: Response = await fetch("https://wedding-rsvp-admin.onrender.com/login", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
