@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Admin Sign Up</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             font-family: Arial, sans-serif;
             background: #121212;
@@ -13,25 +17,32 @@
             justify-content: center;
             align-items: center;
             height: 100vh;
+            margin: 0;
         }
 
         .signup-container {
             background: #1e1e1e;
-            padding: 30px;
-            border-radius: 10px;
+            padding: 40px 30px;
+            border-radius: 15px;
             box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.5);
-            width: 320px;
+            width: 100%;
+            max-width: 360px;
             text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 25px;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin: 8px 0;
+            padding: 12px;
+            margin-bottom: 12px;
             border: 1px solid #555;
-            border-radius: 5px;
+            border-radius: 8px;
             background: #2c2c2c;
             color: #f1f1f1;
+            font-size: 14px;
         }
 
         input::placeholder {
@@ -45,21 +56,23 @@
 
         .error-message {
             color: #ff6b6b;
-            font-size: 14px;
-            margin-bottom: 5px;
-            display: none;
+            font-size: 13px;
+            margin: -6px 0 8px;
             text-align: left;
+            display: none;
         }
 
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
+            margin-top: 10px;
             background: #6200ee;
             color: white;
             border: none;
-            border-radius: 5px;
-            cursor: pointer;
+            border-radius: 8px;
             font-weight: bold;
+            font-size: 15px;
+            cursor: pointer;
             transition: background 0.3s ease;
         }
 
@@ -74,12 +87,26 @@
 
         .error {
             color: #ff6b6b;
-            margin-top: 10px;
+            margin-top: 12px;
         }
 
         .spinner {
             display: inline-block;
-            margin-left: 5px;
+            margin-left: 6px;
+        }
+
+        p {
+            margin-top: 20px;
+            color: #ccc;
+        }
+
+        .alt-button {
+            margin-top: 8px;
+            background: #7c3aed;
+        }
+
+        .alt-button:hover {
+            background: #a78bfa;
         }
     </style>
 </head>
@@ -103,11 +130,11 @@
 
         <div class="error" id="signupError"></div>
     </form>
+
     <p>Already have an account?</p>
-    <button onclick="window.location.href='login.html'">Login</button>
+    <button class="alt-button" onclick="window.location.href='login.html'">Login</button>
 </div>
 
 <script src="./signup.js"></script>
-
 </body>
 </html>
