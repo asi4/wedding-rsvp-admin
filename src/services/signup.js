@@ -91,7 +91,7 @@ form.addEventListener("submit", function (e) { return __awaiter(_this, void 0, v
                 _a.label = 1;
             case 1:
                 _a.trys.push([1, 4, 5, 6]);
-                return [4 /*yield*/, fetch("https://<your-render-backend-url>/api/auth/signup", {
+                return [4 /*yield*/, fetch("https://wedding-rsvp-admin.onrender.com/api/auth/signup", {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify(data),
