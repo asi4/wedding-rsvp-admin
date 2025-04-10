@@ -11,8 +11,8 @@ const app: Express = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/auth", auth);   // Admin login/signup
-app.use("/users", users);  // Admin sees & deletes users
+app.use("/api/auth", auth);   // Admin login/signup
+app.use("/api/users", users);  // Admin sees & deletes users
 
 const MONGO_URI: string = process.env.MONGO_URI || "";
 if (!MONGO_URI) throw new Error("Missing Mongo URI");
