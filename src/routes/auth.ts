@@ -1,10 +1,11 @@
-import express, {Router} from "express";
-import signup from './signup.js';
-import login from './login.js';
+import express from "express";
+import signupRoute from "./signup.js";
+import loginRoute from "./login.js";
 
-const router: Router = express.Router();
+const router = express.Router();
 
-router.post("/signup", signup );
-router.post("/login", login);
+// Combine signup and login under /api/auth
+router.use("/", signupRoute);
+router.use("/", loginRoute);
 
 export default router;

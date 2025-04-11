@@ -5,6 +5,7 @@ export interface IUser extends Document {
     lastName: string;
     email: string;
     password: string;
+    isActive: boolean;
     formId: string; // Unique ID for linking the user's form/guests collection
     createdAt?: Date;
     apiCredentials: {
@@ -28,6 +29,7 @@ const userSchema = new Schema<IUser>({
     password: { type: String, required: true }, // hashed password
     formId: { type: String, unique: true }, // used to separate collections/assets
     createdAt: { type: Date, default: Date.now },
+    isActive: { type: Boolean, default: false },
     apiCredentials: {
         twilioAccountSid: { type: String},
         twilioAuthToken: { type: String},

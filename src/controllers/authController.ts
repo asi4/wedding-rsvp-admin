@@ -53,13 +53,18 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
 };
 
 
-export async function login(req: Request, res: Response) {
+export async function login(req: Request, res: Response): Promise<any> {
     const { email, password } = req.body;
 
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(400).json({ message: "Invalid email or password" });
+            return res.status(400).json({ message: "Email doesn't exist" });
+        }
+
+        // Check if user is active
+        if (!user.isActive) {
+            return res.status(403).json({ message: "You are not approved yet." });
         }
 
         const isMatch: boolean = await bcrypt.compare(password, user.password);
