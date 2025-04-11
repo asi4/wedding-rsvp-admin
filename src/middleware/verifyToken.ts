@@ -10,7 +10,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
     const authHeader: string = req.headers.authorization;
     const BEARER_PREFIX: string = "Bearer ";
 
-    if (!authHeader || !authHeader.startsWith(BEARER_PREFIX)) {
+    if (!authHeader.startsWith(BEARER_PREFIX)) {
         res.status(401).json({ message: "Missing Token (JWT)" });
         return;
     }
