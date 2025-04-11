@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from "mongoose";
 
 export interface IUser extends Document {
-    name: string;
+    firstName: string;
     lastName: string;
     email: string;
     password: string;
@@ -10,7 +10,6 @@ export interface IUser extends Document {
     apiCredentials: {
         twilioAccountSid: String,
         twilioAuthToken: String,
-        // add other credentials here.
     },
     csvData: [
         {
@@ -23,11 +22,11 @@ export interface IUser extends Document {
 }
 
 const userSchema = new Schema<IUser>({
-    name: { type: String, required: true },
+    firstName: { type: String, required: true },
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true }, // hashed password
-    formId: { type: String, required: true, unique: true }, // used to separate collections/assets
+    formId: { type: String, unique: true }, // used to separate collections/assets
     createdAt: { type: Date, default: Date.now },
     apiCredentials: {
         twilioAccountSid: { type: String},

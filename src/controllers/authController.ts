@@ -41,7 +41,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
             message: "Signup successful",
             token,
             user: {
-                firstName: user.name,
+                firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email
             }
