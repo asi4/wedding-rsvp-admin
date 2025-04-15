@@ -26,6 +26,7 @@ loginForm.addEventListener("submit", async (e: SubmitEvent) => {
         const result = await response.json();
 
         if (response.ok) {
+            localStorage.setItem("token", result.token);
             window.location.href = "/dashboard.html";
         } else {
             loginError.textContent = result.message || "Login failed";
