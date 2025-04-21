@@ -6,12 +6,13 @@ export interface IUser extends Document {
     email: string;
     password: string;
     isActive: boolean;
-    formId: string; // Unique ID for linking the user's form/guests collection
     createdAt?: Date;
     apiCredentials: {
         twilioAccountSid: String,
         twilioAuthToken: String,
     },
+    role: string, // "admin" or "user"
+    csvFilename: String,
     csvData: [
         {
             whereFrom: String,
@@ -27,13 +28,14 @@ const userSchema = new Schema<IUser>({
     lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true }, // hashed password
-    formId: { type: String, unique: true }, // used to separate collections/assets
     createdAt: { type: Date, default: Date.now },
     isActive: { type: Boolean, default: false },
     apiCredentials: {
         twilioAccountSid: { type: String},
         twilioAuthToken: { type: String},
     },
+    role: { type: String, default: "user" }, // "admin" or "user"
+    csvFilename: { type: String},
     csvData: [
         {
             whereFrom: { type: String},

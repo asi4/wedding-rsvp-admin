@@ -27,10 +27,8 @@ loginForm.addEventListener("submit", async (e: SubmitEvent) => {
 
         if (response.ok) {
             localStorage.setItem("token", result.token);
-            console.log("Token on dashboard load:", token);
-            // Slight delay to ensure localStorage is saved before redirect
             setTimeout(() => {
-                window.location.href = "/dashboard.html";
+                window.location.href = "/src/services/dashboard.html";
             }, 100);
         } else {
             loginError.textContent = result.message || "Login failed";

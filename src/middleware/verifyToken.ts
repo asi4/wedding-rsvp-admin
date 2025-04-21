@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from "express";
-import jwt, { JwtPayload } from "jsonwebtoken";
+import {NextFunction, Request, Response} from "express";
+import jwt, {JwtPayload} from "jsonwebtoken";
 
 // Custom Request with `user`
 interface AuthRequest extends Request {
@@ -19,7 +19,7 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
 
     try {
         const secret: string = process.env.JWT_SECRET as string;
-        req.user = jwt.verify(token, secret);
+        req.user = jwt.verify(token, secret); // ⬅️ Contains _id and role if token is built correctly
         next();
     } catch (err: any) {
         console.error("JWT Verification Failed:", err);

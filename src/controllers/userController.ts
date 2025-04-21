@@ -1,11 +1,22 @@
 import {Request, Response} from "express";
 import User from "../models/User.js";
 
+interface AuthRequest extends Request {
+    user?: { _id: string; role: string };
+}
+
 // Get all users
-export const getAllUsers = async (req: Request, res: Response): Promise<void>=> {
+export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
-        const users = await User.find().select("-password"); // Don't return password
-        res.status(200).json(users);
+        const { _id, role } = req.user;
+
+        if (role === "admin") {
+            const users = await User.find().select("-password"); // Don't return passwords
+            res.status(200).json(users);
+        } else {
+            const currentUser = await User.findById(_id).select("-password");
+            res.status(200).json([currentUser]); // Send as array to keep frontend logic the same
+        }
     } catch (err) {
         console.error("Error fetching users:", err);
         res.status(500).json({ message: "Server error" });

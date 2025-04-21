@@ -67,7 +67,10 @@ loginForm.addEventListener("submit", function (e) { return __awaiter(_this, void
             case 3:
                 result = _a.sent();
                 if (response.ok) {
-                    window.location.href = "/dashboard.html";
+                    localStorage.setItem("token", result.token);
+                    setTimeout(function () {
+                        window.location.href = "/src/services/dashboard.html";
+                    }, 100);
                 }
                 else {
                     loginError.textContent = result.message || "Login failed";

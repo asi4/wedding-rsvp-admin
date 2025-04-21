@@ -28,18 +28,10 @@ function renderUsers(users) {
   <td class="status ${user.isActive ? 'active' : 'inactive'}">
     ${user.isActive ? 'Active' : 'Inactive'}
   </td>
-  <td>
-    ${user.isActive
-            ? `<button class="icon-btn" onclick="toggleStatus('${user._id}', false)">
-           <i class="fas fa-user-lock deactivate-icon" title="Deactivate"></i>
-         </button>`
-            : `<button class="icon-btn" onclick="toggleStatus('${user._id}', true)">
-           <i class="fas fa-user-check approve-icon" title="Approve"></i>
-         </button>`
-        }
-    <button class="icon-btn" onclick="deleteUser('${user._id}')">
-      <i class="fas fa-user-xmark delete-icon" title="Delete"></i>
-    </button>
+    <input type="file" accept=".csv" onchange="uploadCSV(event, '${user._id}')" />
+    <button class="icon-btn" onclick="downloadCSV('${user._id}')">📥</button>
+    <button class="icon-btn" onclick="deleteCSV('${user._id}')">🗑️</button>
+    </td>
   </td>
 `;
         tbody.appendChild(tr);
@@ -77,7 +69,66 @@ async function deleteUser(userId) {
 
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/login.html";
+    window.location.href = "/src/services/login.html";
+}
+
+const userCSVs = new Map<string, File>();
+
+async function uploadCSV(event: Event, userId: string) {
+    const input: HTMLInputElement = event.target as HTMLInputElement;
+    if (input.files && input.files[0]) {
+        const file = input.files[0];
+        if (file.type !== "text/csv") {
+            alert("Only .csv files are allowed.");
+            return;
+        }
+
+        const formData: FormData = new FormData();
+        formData.append("csv", file);
+
+        try {
+            const res: Response = await fetch(`${API_BASE}/users/${userId}/csv`, {
+                method: "POST",
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                body: formData
+            });
+
+            if (!res.ok) throw new Error("Upload failed");
+
+            alert("CSV uploaded successfully.");
+        } catch (err) {
+            console.error("CSV upload failed", err);
+            alert("Failed to upload CSV.");
+        }
+    }
+}
+
+function downloadCSV(userId: string) {
+    const file = userCSVs.get(userId);
+    if (!file) {
+        alert("No CSV uploaded yet.");
+        return;
+    }
+
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${userId}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+
+function deleteCSV(userId: string) {
+    if (userCSVs.has(userId)) {
+        userCSVs.delete(userId);
+        alert(`CSV deleted for user ${userId}`);
+    } else {
+        alert("No CSV to delete.");
+    }
 }
 
 fetchUsers();

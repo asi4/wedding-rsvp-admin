@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 import { Request, Response } from "express";
+import {nanoid} from "nanoid";
 
 const JWT_SECRET: string = process.env.JWT_SECRET || "your-secret-key";
 
@@ -27,7 +28,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
         const hashedPassword: string = await bcrypt.hash(password, 10);
 
         // Save user
-        const user = new User({ firstName, lastName, email, password: hashedPassword });
+        const user = new User({ firstName, lastName, email, password: hashedPassword, isActive: false, role: "user" });
         await user.save();
 
         // Create token
@@ -43,11 +44,13 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
             user: {
                 firstName: user.firstName,
                 lastName: user.lastName,
-                email: user.email
+                email: user.email,
+                role: "user"
             }
         });
     } catch (error: any) {
         console.error("Signup error:", error);
+        console.error("Signup full:", error.error);
         return res.status(500).json({ message: "Server error during signup" });
     }
 };

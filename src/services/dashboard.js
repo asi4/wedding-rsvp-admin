@@ -69,9 +69,7 @@ function renderUsers(users) {
     tbody.innerHTML = "";
     users.forEach(function (user) {
         var tr = document.createElement("tr");
-        tr.innerHTML = "\n  <td>".concat(user.firstName, "</td>\n  <td>").concat(user.lastName, "</td>\n  <td>").concat(user.email, "</td>\n  <td class=\"status ").concat(user.isActive ? 'active' : 'inactive', "\">\n    ").concat(user.isActive ? 'Active' : 'Inactive', "\n  </td>\n  <td>\n    ").concat(user.isActive
-            ? "<button class=\"icon-btn\" onclick=\"toggleStatus('".concat(user._id, "', false)\">\n           <i class=\"fas fa-user-lock deactivate-icon\" title=\"Deactivate\"></i>\n         </button>")
-            : "<button class=\"icon-btn\" onclick=\"toggleStatus('".concat(user._id, "', true)\">\n           <i class=\"fas fa-user-check approve-icon\" title=\"Approve\"></i>\n         </button>"), "\n    <button class=\"icon-btn\" onclick=\"deleteUser('").concat(user._id, "')\">\n      <i class=\"fas fa-user-xmark delete-icon\" title=\"Delete\"></i>\n    </button>\n  </td>\n");
+        tr.innerHTML = "\n  <td>".concat(user.firstName, "</td>\n  <td>").concat(user.lastName, "</td>\n  <td>").concat(user.email, "</td>\n  <td class=\"status ").concat(user.isActive ? 'active' : 'inactive', "\">\n    ").concat(user.isActive ? 'Active' : 'Inactive', "\n  </td>\n    <input type=\"file\" accept=\".csv\" onchange=\"uploadCSV(event, '").concat(user._id, "')\" />\n    <button class=\"icon-btn\" onclick=\"downloadCSV('").concat(user._id, "')\">\uD83D\uDCE5</button>\n    <button class=\"icon-btn\" onclick=\"deleteCSV('").concat(user._id, "')\">\uD83D\uDDD1\uFE0F</button>\n    </td>\n  </td>\n");
         tbody.appendChild(tr);
     });
 }
@@ -137,6 +135,44 @@ function deleteUser(userId) {
 }
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/login.html";
+    window.location.href = "/src/services/login.html";
+}
+var userCSVs = new Map();
+function uploadCSV(event, userId) {
+    var input = event.target;
+    if (input.files && input.files[0]) {
+        var file = input.files[0];
+        if (file.type === "text/csv") {
+            userCSVs.set(userId, file);
+            alert("CSV uploaded for user ".concat(userId));
+        }
+        else {
+            alert("Only .csv files are allowed.");
+        }
+    }
+}
+function downloadCSV(userId) {
+    var file = userCSVs.get(userId);
+    if (!file) {
+        alert("No CSV uploaded yet.");
+        return;
+    }
+    var url = URL.createObjectURL(file);
+    var a = document.createElement("a");
+    a.href = url;
+    a.download = "".concat(userId, ".csv");
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+}
+function deleteCSV(userId) {
+    if (userCSVs.has(userId)) {
+        userCSVs.delete(userId);
+        alert("CSV deleted for user ".concat(userId));
+    }
+    else {
+        alert("No CSV to delete.");
+    }
 }
 fetchUsers();
