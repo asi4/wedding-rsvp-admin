@@ -40,26 +40,34 @@ if (!token)
     window.location.href = "/login.html";
 function fetchUsers() {
     return __awaiter(this, void 0, void 0, function () {
-        var res, users, err_1;
+        var res, errorMsg, users, err_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    _a.trys.push([0, 3, , 4]);
+                    _a.trys.push([0, 5, , 6]);
                     return [4 /*yield*/, fetch("".concat(API_BASE, "/users"), {
                             headers: { Authorization: "Bearer ".concat(token) }
                         })];
                 case 1:
                     res = _a.sent();
-                    return [4 /*yield*/, res.json()];
+                    if (!!res.ok) return [3 /*break*/, 3];
+                    return [4 /*yield*/, res.text()];
                 case 2:
+                    errorMsg = _a.sent();
+                    throw new Error("API error: ".concat(res.status, " - ").concat(errorMsg));
+                case 3: return [4 /*yield*/, res.json()];
+                case 4:
                     users = _a.sent();
+                    if (!Array.isArray(users)) {
+                        throw new TypeError("Expected users to be an array");
+                    }
                     renderUsers(users);
-                    return [3 /*break*/, 4];
-                case 3:
+                    return [3 /*break*/, 6];
+                case 5:
                     err_1 = _a.sent();
                     console.error("Failed to fetch users", err_1);
-                    return [3 /*break*/, 4];
-                case 4: return [2 /*return*/];
+                    return [3 /*break*/, 6];
+                case 6: return [2 /*return*/];
             }
         });
     });
@@ -68,8 +76,10 @@ function renderUsers(users) {
     var tbody = document.querySelector("#userTable tbody");
     tbody.innerHTML = "";
     users.forEach(function (user) {
+        if (!user)
+            return;
         var tr = document.createElement("tr");
-        tr.innerHTML = "\n  <td>".concat(user.firstName, "</td>\n  <td>").concat(user.lastName, "</td>\n  <td>").concat(user.email, "</td>\n  <td class=\"status ").concat(user.isActive ? 'active' : 'inactive', "\">\n    ").concat(user.isActive ? 'Active' : 'Inactive', "\n  </td>\n    <input type=\"file\" accept=\".csv\" onchange=\"uploadCSV(event, '").concat(user._id, "')\" />\n    <button class=\"icon-btn\" onclick=\"downloadCSV('").concat(user._id, "')\">\uD83D\uDCE5</button>\n    <button class=\"icon-btn\" onclick=\"deleteCSV('").concat(user._id, "')\">\uD83D\uDDD1\uFE0F</button>\n    </td>\n  </td>\n");
+        tr.innerHTML = "\n            <td>".concat(user.firstName || "", "</td>\n            <td>").concat(user.lastName || "", "</td>\n            <td>").concat(user.email || "", "</td>\n            <td class=\"status ").concat(user.isActive ? 'active' : 'inactive', "\">\n              ").concat(user.isActive ? 'Active' : 'Inactive', "\n            </td>\n            <td>\n              <input type=\"file\" accept=\".csv\" onchange=\"uploadCSV(event, '").concat(user._id, "')\" />\n              <button class=\"icon-btn\" onclick=\"downloadCSV('").concat(user._id, "')\">\uD83D\uDCE5</button>\n              <button class=\"icon-btn\" onclick=\"deleteCSV('").concat(user._id, "')\">\uD83D\uDDD1\uFE0F</button>\n            </td>\n        ");
         tbody.appendChild(tr);
     });
 }

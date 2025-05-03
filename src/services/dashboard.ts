@@ -8,7 +8,18 @@ async function fetchUsers() {
         const res = await fetch(`${API_BASE}/users`, {
             headers: { Authorization: `Bearer ${token}` }
         });
+
+        if (!res.ok) {
+            const errorMsg = await res.text();
+            throw new Error(`API error: ${res.status} - ${errorMsg}`);
+        }
+
         const users = await res.json();
+
+        if (!Array.isArray(users)) {
+            throw new TypeError("Expected users to be an array");
+        }
+
         renderUsers(users);
     } catch (err) {
         console.error("Failed to fetch users", err);
@@ -20,20 +31,21 @@ function renderUsers(users) {
     tbody.innerHTML = "";
 
     users.forEach(user => {
+        if (!user) return;
         const tr = document.createElement("tr");
         tr.innerHTML = `
-  <td>${user.firstName}</td>
-  <td>${user.lastName}</td>
-  <td>${user.email}</td>
-  <td class="status ${user.isActive ? 'active' : 'inactive'}">
-    ${user.isActive ? 'Active' : 'Inactive'}
-  </td>
-    <input type="file" accept=".csv" onchange="uploadCSV(event, '${user._id}')" />
-    <button class="icon-btn" onclick="downloadCSV('${user._id}')">📥</button>
-    <button class="icon-btn" onclick="deleteCSV('${user._id}')">🗑️</button>
-    </td>
-  </td>
-`;
+            <td>${user.firstName || ""}</td>
+            <td>${user.lastName || ""}</td>
+            <td>${user.email || ""}</td>
+            <td class="status ${user.isActive ? 'active' : 'inactive'}">
+              ${user.isActive ? 'Active' : 'Inactive'}
+            </td>
+            <td>
+              <input type="file" accept=".csv" onchange="uploadCSV(event, '${user._id}')" />
+              <button class="icon-btn" onclick="downloadCSV('${user._id}')">📥</button>
+              <button class="icon-btn" onclick="deleteCSV('${user._id}')">🗑️</button>
+            </td>
+        `;
         tbody.appendChild(tr);
     });
 }
