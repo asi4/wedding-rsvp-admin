@@ -4,7 +4,7 @@ import { authenticateToken } from "../middleware/verifyToken.js";
 
 const router = express.Router();
 
-router.get("/users", authenticateToken, getAllUsers);
+router.get("/", authenticateToken, getAllUsers);
 router.put("/:id", authenticateToken, updateUserStatus);
 router.delete("/:id", authenticateToken, deleteUser);
 

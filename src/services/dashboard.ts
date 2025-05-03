@@ -69,7 +69,7 @@ async function deleteUser(userId) {
 
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/src/services/login.html";
+    window.location.href = "/login.html";
 }
 
 const userCSVs = new Map<string, File>();

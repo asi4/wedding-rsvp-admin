@@ -135,7 +135,7 @@ function deleteUser(userId) {
 }
 function logout() {
     localStorage.removeItem("token");
-    window.location.href = "/src/services/login.html";
+    window.location.href = "/login.html";
 }
 var userCSVs = new Map();
 function uploadCSV(event, userId) {
