@@ -139,17 +139,45 @@ function logout() {
 }
 var userCSVs = new Map();
 function uploadCSV(event, userId) {
-    var input = event.target;
-    if (input.files && input.files[0]) {
-        var file = input.files[0];
-        if (file.type === "text/csv") {
-            userCSVs.set(userId, file);
-            alert("CSV uploaded for user ".concat(userId));
-        }
-        else {
-            alert("Only .csv files are allowed.");
-        }
-    }
+    return __awaiter(this, void 0, void 0, function () {
+        var input, file, formData, res, err_4;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    input = event.target;
+                    if (!(input.files && input.files[0])) return [3 /*break*/, 4];
+                    file = input.files[0];
+                    if (file.type !== "text/csv") {
+                        alert("Only .csv files are allowed.");
+                        return [2 /*return*/];
+                    }
+                    formData = new FormData();
+                    formData.append("csv", file);
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 3, , 4]);
+                    return [4 /*yield*/, fetch("".concat(API_BASE, "/users/").concat(userId, "/csv"), {
+                            method: "POST",
+                            headers: {
+                                Authorization: "Bearer ".concat(token)
+                            },
+                            body: formData
+                        })];
+                case 2:
+                    res = _a.sent();
+                    if (!res.ok)
+                        throw new Error("Upload failed");
+                    alert("CSV uploaded successfully.");
+                    return [3 /*break*/, 4];
+                case 3:
+                    err_4 = _a.sent();
+                    console.error("CSV upload failed", err_4);
+                    alert("Failed to upload CSV.");
+                    return [3 /*break*/, 4];
+                case 4: return [2 /*return*/];
+            }
+        });
+    });
 }
 function downloadCSV(userId) {
     var file = userCSVs.get(userId);
