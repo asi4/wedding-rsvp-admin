@@ -33,7 +33,7 @@ export const signup = async (req: Request, res: Response): Promise<any> => {
 
         // Create token
         const token: string = jwt.sign(
-            { userId: user._id, email: user.email },
+            { _id: user._id, email: user.email, role: user.role },
             process.env.JWT_SECRET as string,
             { expiresIn: "2h" }
         );
@@ -75,7 +75,11 @@ export async function login(req: Request, res: Response): Promise<any> {
             return res.status(400).json({ message: "Invalid email or password" });
         }
 
-        const token: string = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: "1d" });
+        const token: string = jwt.sign(
+            { _id: user._id, email: user.email, role: user.role },
+            JWT_SECRET,
+            { expiresIn: "1d" }
+        );
         res.status(200).json({ token });
     } catch (error) {
         console.error("Login error:", error);
