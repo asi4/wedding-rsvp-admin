@@ -41,7 +41,7 @@ function renderUsers(users) {
               ${user.isActive ? 'Active' : 'Inactive'}
             </td>
             <td>
-              <input type="file" accept=".csv" onchange="uploadCSV(event, '${user._id}')" />
+              <input type="file" accept=".csv,.xlsx" onchange="uploadCSV(event, '${user._id}')" />
               <button class="icon-btn" onclick="downloadCSV('${user._id}')">📥</button>
               <button class="icon-btn" onclick="deleteCSV('${user._id}')">🗑️</button>
             </td>
@@ -99,7 +99,7 @@ async function uploadCSV(event: Event, userId: string) {
         formData.append("csv", file);
 
         try {
-            const res: Response = await fetch(`${API_BASE}/users/${userId}/csv`, {
+            const res: Response = await fetch(`${API_BASE}/users/${userId}/upload`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`

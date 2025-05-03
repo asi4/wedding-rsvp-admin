@@ -12,10 +12,10 @@ export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void
         console.log("Fetched user from token:", _id, role);
 
         if (role === "admin") {
-            const users = await User.find().select("-password"); // Don't return passwords
+            const users = await User.find().select("-password -__v -createdAt -csvData"); // Don't return passwords
             res.status(200).json(users);
         } else {
-            const currentUser = await User.findById(_id).select("-password");
+            const currentUser = await User.findById(_id).select("-password -__v -createdAt -csvData");
             if (!currentUser) {
                 console.warn("No user found for ID:", _id);
                 res.status(404).json({ message: "User not found" });
