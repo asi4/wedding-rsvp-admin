@@ -9,13 +9,19 @@ interface AuthRequest extends Request {
 export const getAllUsers = async (req: AuthRequest, res: Response): Promise<void> => {
     try {
         const { _id, role } = req.user;
+        console.log("Fetched user from token:", _id, role);
 
         if (role === "admin") {
             const users = await User.find().select("-password"); // Don't return passwords
             res.status(200).json(users);
         } else {
             const currentUser = await User.findById(_id).select("-password");
-            res.status(200).json([currentUser]); // Send as array to keep frontend logic the same
+            if (!currentUser) {
+                console.warn("No user found for ID:", _id);
+                res.status(404).json({ message: "User not found" });
+            } else {
+                res.status(200).json([currentUser]); // Send as array to keep frontend logic the same
+            }
         }
     } catch (err) {
         console.error("Error fetching users:", err);
