@@ -1,7 +1,7 @@
 import express from "express";
 import { getAllUsers, updateUserStatus, deleteUser } from "../controllers/userController.js";
 import { authenticateToken } from "../middleware/verifyToken.js";
-import {uploadFromGoogleSheet, uploadSpreadsheet} from "../controllers/csvController";
+import {uploadFromGoogleSheet, uploadSpreadsheet} from "../controllers/csvController.js";
 import multer from "multer";
 
 const upload = multer();
