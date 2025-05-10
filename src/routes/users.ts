@@ -10,7 +10,7 @@ const router = express.Router();
 router.get("/", authenticateToken, getAllUsers);
 router.put("/:id", authenticateToken, updateUserStatus);
 router.delete("/:id", authenticateToken, deleteUser);
-router.post("/:id/upload", authenticateToken, upload.single("csv"), uploadSpreadsheet);
+router.post("/:id/upload", authenticateToken, upload.single("file"), uploadSpreadsheet);
 router.post("/:id/sheet", authenticateToken, uploadFromGoogleSheet);
 
 

@@ -25,6 +25,7 @@ export const uploadSpreadsheet = async (req: Request, res: Response): Promise<vo
         const buffer = file.buffer;
         let parsedData: GuestEntry[] = [];
 
+        console.log("Uploading file:", file.originalname, file.mimetype);
         if (mimeType === "text/csv" || file.originalname.endsWith(".csv")) {
             const csvText = buffer.toString("utf-8");
             parsedData = parse(csvText, {

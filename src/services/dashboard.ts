@@ -3,6 +3,8 @@ const token = localStorage.getItem("token");
 
 if (!token) window.location.href = "/login.html";
 
+const userCSVs = new Map<string, File>();
+
 async function fetchUsers() {
     try {
         const res = await fetch(`${API_BASE}/users`, {
@@ -32,25 +34,36 @@ function renderUsers(users) {
 
     users.forEach(user => {
         if (!user) return;
+
         const tr = document.createElement("tr");
+        const statusClass = user.isActive ? "active" : "inactive";
+        const statusText = user.isActive ? "Active" : "Inactive";
+
         tr.innerHTML = `
             <td>${user.firstName || ""}</td>
             <td>${user.lastName || ""}</td>
             <td>${user.email || ""}</td>
-            <td class="status ${user.isActive ? 'active' : 'inactive'}">
-              ${user.isActive ? 'Active' : 'Inactive'}
-            </td>
+            <td class="status ${statusClass}">${statusText}</td>
             <td>
-              <input type="file" accept=".csv,.xlsx" onchange="uploadCSV(event, '${user._id}')" />
-              <button class="icon-btn" onclick="downloadCSV('${user._id}')">📥</button>
-              <button class="icon-btn" onclick="deleteCSV('${user._id}')">🗑️</button>
+                <div>
+                    <label>Upload CSV or Excel</label><br/>
+                    <input type="file" data-userid="${user._id}" class="file-upload" /><br/><br/>
+
+                    <label>Import from Google Sheet</label><br/>
+                    <input type="text" placeholder="Paste Google Sheet link" class="google-sheet-url" />
+                    <button data-userid="${user._id}" class="google-sheet-upload">Import</button><br/><br/>
+
+                    <button class="icon-btn download-btn" data-userid="${user._id}">📥</button>
+                    <button class="icon-btn delete-btn" data-userid="${user._id}">🗑️</button>
+                </div>
             </td>
         `;
+
         tbody.appendChild(tr);
     });
 }
 
-async function toggleStatus(userId, isActive) {
+async function toggleStatus(userId: string, isActive: boolean) {
     try {
         await fetch(`${API_BASE}/users/${userId}`, {
             method: "PUT",
@@ -66,7 +79,7 @@ async function toggleStatus(userId, isActive) {
     }
 }
 
-async function deleteUser(userId) {
+async function deleteUser(userId: string) {
     if (!confirm("Are you sure you want to delete this user?")) return;
     try {
         await fetch(`${API_BASE}/users/${userId}`, {
@@ -84,22 +97,31 @@ function logout() {
     window.location.href = "/login.html";
 }
 
-const userCSVs = new Map<string, File>();
+async function uploadSpreadsheet(event: Event, userId: string) {
+    const input = event.target as HTMLInputElement;
 
-async function uploadCSV(event: Event, userId: string) {
-    const input: HTMLInputElement = event.target as HTMLInputElement;
     if (input.files && input.files[0]) {
         const file = input.files[0];
-        if (file.type !== "text/csv") {
-            alert("Only .csv files are allowed.");
+
+        const allowedTypes = [
+            "text/csv",
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+        ];
+        const allowedExtensions = [".csv", ".xlsx"];
+
+        const isMimeValid = allowedTypes.includes(file.type);
+        const isExtensionValid = allowedExtensions.some(ext => file.name.toLowerCase().endsWith(ext));
+
+        if (!isMimeValid && !isExtensionValid) {
+            alert("Only .csv and .xlsx files are supported.");
             return;
         }
 
-        const formData: FormData = new FormData();
+        const formData = new FormData();
         formData.append("csv", file);
 
         try {
-            const res: Response = await fetch(`${API_BASE}/users/${userId}/upload`, {
+            const res = await fetch(`${API_BASE}/users/${userId}/upload`, {
                 method: "POST",
                 headers: {
                     Authorization: `Bearer ${token}`
@@ -109,11 +131,38 @@ async function uploadCSV(event: Event, userId: string) {
 
             if (!res.ok) throw new Error("Upload failed");
 
-            alert("CSV uploaded successfully.");
+            userCSVs.set(userId, file); // ✅ Track uploaded file
+            alert(`File '${file.name}' uploaded successfully.`);
         } catch (err) {
-            console.error("CSV upload failed", err);
-            alert("Failed to upload CSV.");
+            console.error("File upload failed:", err);
+            alert("Failed to upload file.");
         }
+    }
+}
+
+async function uploadGoogleSheet(sheetUrl: string, userId: string) {
+    if (!sheetUrl.includes("docs.google.com/spreadsheets")) {
+        alert("Please enter a valid Google Sheet URL.");
+        return;
+    }
+
+    try {
+        const res = await fetch(`${API_BASE}/users/${userId}/upload-from-google`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${token}`
+            },
+            body: JSON.stringify({ sheetUrl })
+        });
+
+        if (!res.ok) throw new Error("Google Sheet upload failed");
+
+        const data = await res.json();
+        alert(`Google Sheet imported successfully with ${data.rows} rows.`);
+    } catch (err) {
+        console.error("Google Sheet upload error:", err);
+        alert("Failed to import Google Sheet.");
     }
 }
 
@@ -143,4 +192,36 @@ function deleteCSV(userId: string) {
     }
 }
 
+// Event Delegation Setup
+document.addEventListener("change", function (e) {
+    const target = e.target as HTMLInputElement;
+    if (target.classList.contains("file-upload") && target.files?.[0]) {
+        const userId = target.dataset.userid!;
+        uploadSpreadsheet(e, userId);
+    }
+});
+
+document.addEventListener("click", function (e) {
+    const target = e.target as HTMLElement;
+
+    if (target.classList.contains("google-sheet-upload")) {
+        const userId = target.dataset.userid!;
+        const row = target.closest("tr");
+        const urlInput = row?.querySelector(".google-sheet-url") as HTMLInputElement;
+        const sheetUrl = urlInput.value;
+        uploadGoogleSheet(sheetUrl, userId);
+    }
+
+    if (target.classList.contains("download-btn")) {
+        const userId = target.dataset.userid!;
+        downloadCSV(userId);
+    }
+
+    if (target.classList.contains("delete-btn")) {
+        const userId = target.dataset.userid!;
+        deleteCSV(userId);
+    }
+});
+
+// Initial Fetch
 fetchUsers();
